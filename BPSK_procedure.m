@@ -1,30 +1,30 @@
 clear all;
 close all;
 
-% Выбираем размер BPSK последовательности
+% Р’С‹Р±РёСЂР°РµРј СЂР°Р·РјРµСЂ BPSK РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё
 size = 100;
-% Установка несущей частоты
+% РЈСЃС‚Р°РЅРѕРІРєР° РЅРµСЃСѓС‰РµР№ С‡Р°СЃС‚РѕС‚С‹
 fc = 10e6;
-% Частота дискретизации
+% Р§Р°СЃС‚РѕС‚Р° РґРёСЃРєСЂРµС‚РёР·Р°С†РёРё
 fs = 50e6;
-% Коэффициент интерполяции
-L = 50;  % По сути это озночает колиество точек на 1 символ сообщения
+% РљРѕСЌС„С„РёС†РёРµРЅС‚ РёРЅС‚РµСЂРїРѕР»СЏС†РёРё
+L = 50;  % РџРѕ СЃСѓС‚Рё СЌС‚Рѕ РѕР·РЅРѕС‡Р°РµС‚ РєРѕР»РёРµСЃС‚РІРѕ С‚РѕС‡РµРє РЅР° 1 СЃРёРјРІРѕР» СЃРѕРѕР±С‰РµРЅРёСЏ
 
-SIGNAL_DURATION_micro = (size*L/fs)*1e6; % Длительность отправленного сообщения в микросекундах
+SIGNAL_DURATION_micro = (size*L/fs)*1e6; % Р”Р»РёС‚РµР»СЊРЅРѕСЃС‚СЊ РѕС‚РїСЂР°РІР»РµРЅРЅРѕРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ РІ РјРёРєСЂРѕСЃРµРєСѓРЅРґР°С…
 
-%% Генерация сигнала
+%% Р“РµРЅРµСЂР°С†РёСЏ СЃРёРіРЅР°Р»Р°
 
 
-% Формирование битовой последовательности
-RANDOMDATA = randi([0 1], 1, 10000);  % Создание псевдорандомного битового потока
-DATA = RANDOMDATA(1:size);            % Вычленяем матрицу подходящей размерности
+% Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ Р±РёС‚РѕРІРѕР№ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё
+RANDOMDATA = randi([0 1], 1, 10000);  % РЎРѕР·РґР°РЅРёРµ РїСЃРµРІРґРѕСЂР°РЅРґРѕРјРЅРѕРіРѕ Р±РёС‚РѕРІРѕРіРѕ РїРѕС‚РѕРєР°
+DATA = RANDOMDATA(1:size);            % Р’С‹С‡Р»РµРЅСЏРµРј РјР°С‚СЂРёС†Сѓ РїРѕРґС…РѕРґСЏС‰РµР№ СЂР°Р·РјРµСЂРЅРѕСЃС‚Рё
 
-% Осуществление BPSK модуляции
+% РћСЃСѓС‰РµСЃС‚РІР»РµРЅРёРµ BPSK РјРѕРґСѓР»СЏС†РёРё
 
 for i = 1:length(DATA)
   if (DATA(i) == 1)
     MOD_DATA(i) = 1;
-  else                    % нули сиановятся -1, а единицы остаются единицами
+  else                    % РЅСѓР»Рё СЃРёР°РЅРѕРІСЏС‚СЃСЏ -1, Р° РµРґРёРЅРёС†С‹ РѕСЃС‚Р°СЋС‚СЃСЏ РµРґРёРЅРёС†Р°РјРё
     MOD_DATA(i) = -1;
   end
 end
@@ -48,7 +48,7 @@ figure;
 plot(MOD_DATA);
 title('MOD DATA');
 grid on;
-% Интерполируем
+% РРЅС‚РµСЂРїРѕР»РёСЂСѓРµРј
 
 q = 1; p = 1;
 for i=1:size
@@ -69,20 +69,20 @@ plot(0:fs/length(MOD_DATA_Interp_FFT):fs - fs/length(MOD_DATA_Interp_FFT) ,abs(M
 title('MOD DATA Interp FFT');
 grid on;
 
-% Задание временного диапазона
+% Р—Р°РґР°РЅРёРµ РІСЂРµРјРµРЅРЅРѕРіРѕ РґРёР°РїР°Р·РѕРЅР°
 t = (0: length(MOD_DATA_Interp) - 1)/fs;
-% Генерация несущего нармонического сигнала с частотой fc (carrying)
+% Р“РµРЅРµСЂР°С†РёСЏ РЅРµСЃСѓС‰РµРіРѕ РЅР°СЂРјРѕРЅРёС‡РµСЃРєРѕРіРѕ СЃРёРіРЅР°Р»Р° СЃ С‡Р°СЃС‚РѕС‚РѕР№ fc (carrying)
 car_sig = sin(2*pi*fc*t);
 
 
 
-% Перенос последовательности MOD_DATA_interp на несущую частоту путем перемножения на гармонический сигнал
+% РџРµСЂРµРЅРѕСЃ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё MOD_DATA_interp РЅР° РЅРµСЃСѓС‰СѓСЋ С‡Р°СЃС‚РѕС‚Сѓ РїСѓС‚РµРј РїРµСЂРµРјРЅРѕР¶РµРЅРёСЏ РЅР° РіР°СЂРјРѕРЅРёС‡РµСЃРєРёР№ СЃРёРіРЅР°Р»
 for i = 1:length(MOD_DATA_Interp)
   SENT_TO_WAVEFORM_GENERATOR(i) = MOD_DATA_Interp(i)*car_sig(i);
 end
 
 
-% Построить график и спектр сигнала SENT_TO_WAVEFORM_GENERATOR
+% РџРѕСЃС‚СЂРѕРёС‚СЊ РіСЂР°С„РёРє Рё СЃРїРµРєС‚СЂ СЃРёРіРЅР°Р»Р° SENT_TO_WAVEFORM_GENERATOR
 
 SENT_TO_WAVEFORM_GENERATOR_FFT = fft(SENT_TO_WAVEFORM_GENERATOR);
 figure;
@@ -95,130 +95,131 @@ plot(0:fs/length(SENT_TO_WAVEFORM_GENERATOR_FFT):fs - fs/length(SENT_TO_WAVEFORM
 title('SENT TO WAVEFORM GENERATOR FFT');
 grid on;
 
-%% Подключение к генератору и отправка сигнала на него
+% %% РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє РіРµРЅРµСЂР°С‚РѕСЂСѓ Рё РѕС‚РїСЂР°РІРєР° СЃРёРіРЅР°Р»Р° РЅР° РЅРµРіРѕ
+% 
+% % Find a VISA-USB object.
+% % Р—Р°С‰РёС‚Р° РѕС‚ СЃРѕР·РґР°РЅРёСЏ РєРѕРїРёР№ РѕРґРЅРѕРіРѕ Рё С‚РѕРіРѕ Р¶Рµ РѕР±СЉРµРєС‚Р° СЃРѕРµРґРёРЅРµРЅРёСЏ
+% % Р•СЃР»Рё РѕР±СЉРµРєС‚ СѓР¶Рµ СЃСѓС‰РµСЃС‚РІСѓРµС‚ РѕРЅ РЅРµ Р·Р°РїРёСЃР°РЅ РІ РїРµСЂРµРјРµРЅРЅСѓСЋ obj1, С‚Рѕ Р·Р°РїРёСЃС‹РІР°РµРј
+% % РµРіРѕ С‚СѓРґР° (04.10.2021, 1:42)
+% WG_obj = instrfind('Type', 'visa-usb', 'RsrcName', 'USB0::0x0957::0x2807::MY57401328::0::INSTR', 'Tag', '');
+% 
+% % Create the VISA-USB object if it does not exist
+% % otherwise use the object that was found.
+% if isempty(WG_obj)
+%     WG_obj = visa('KEYSIGHT', 'USB0::0x0957::0x2807::MY57401328::0::INSTR');
+% else
+%     fclose(WG_obj);
+%     WG_obj = WG_obj(1);
+% end
+% 
+% name = 'my_waveforms';
+% sRate = fs;
+% amp = 1;
+% 
+% % Connect to instrument object, obj1.
+% % fopen(obj1);
+% 
+% % vAddress = ['USB0::0x0957::0x2807::MY57401329::0::INSTR']; %build visa address string to connect
+% % fgen = visa('AGILENT',vAddress); %build IO object
+% % obj1.Timeout = 15; %set IO time out
+% %calculate output buffer size
+% obj1_buffer = length(SENT_TO_WAVEFORM_GENERATOR)*8;
+% set (WG_obj,'OutputBufferSize',(obj1_buffer+125));
+% 
+% WG_obj.Timeout = 10;
+% 
+% %open connection to 33500A/B waveform generator
+% try
+%    fopen(WG_obj);
+% catch exception %problem occurred throw error message
+%     uiwait(msgbox('Error occurred trying to connect to the 33522, verify correct IP address','Error Message','error'));
+%     rethrow(exception);
+% end
+% 
+% %Query Idendity string and report
+% fprintf (WG_obj, '*IDN?');
+% idn = fscanf (WG_obj);
+% fprintf (idn)
+% fprintf ('\n\n')
+% 
+% %create waitbar for sending waveform to 33500
+% mes = ['Connected to ' idn ' sending waveforms.....'];
+% h = waitbar(0,mes);
+% 
+% %Reset instrument
+% fprintf (WG_obj, '*RST');
+% 
+% %make sure waveform data is in column vector
+% if isrow(SENT_TO_WAVEFORM_GENERATOR) == 0
+%     SENT_TO_WAVEFORM_GENERATOR = SENT_TO_WAVEFORM_GENERATOR';
+% end
+% 
+% %set the waveform data to single precision
+% SENT_TO_WAVEFORM_GENERATOR = single(SENT_TO_WAVEFORM_GENERATOR);
+% 
+% ON_OFF_FILTER_CH1 = ['SOURce1:FUNCtion:ARBitrary:FILTer ', 'OFF'];
+% fprintf(WG_obj, ON_OFF_FILTER_CH1); % ON OFF filter
+% 
+% %scale data between 1 and -1
+% mx = max(abs(SENT_TO_WAVEFORM_GENERATOR));
+% SENT_TO_WAVEFORM_GENERATOR = (1*SENT_TO_WAVEFORM_GENERATOR)/mx;
+% 
+% %update waitbar
+% waitbar(.1,h,mes);
+% 
+% %send waveform to 33500
+% fprintf(WG_obj, 'SOURce1:DATA:VOLatile:CLEar'); %Clear volatile memory
+% fprintf(WG_obj, 'FORM:BORD SWAP');  %configure the box to correctly accept the binary arb points
+% SENT_TO_WG_Bytes=num2str(length(SENT_TO_WAVEFORM_GENERATOR) * 4); %# of bytes
+% header= ['SOURce1:DATA:ARBitrary ' name ', #' num2str(length(SENT_TO_WG_Bytes)) SENT_TO_WG_Bytes]; %create header
+% binblockBytes = typecast(SENT_TO_WAVEFORM_GENERATOR, 'uint8');  %convert datapoints to binary before sending
+% fwrite(WG_obj, [header binblockBytes], 'uint8'); %combine header and datapoints then send to instrument
+% fprintf(WG_obj, '*WAI');   %Make sure no other commands are exectued until arb is done downloadin
+% %update waitbar
+% waitbar(.8,h,mes);
+% %Set desired configuration for channel 1
+% command = ['SOURce1:FUNCtion:ARBitrary ' name];
+% %fprintf(fgen,'SOURce1:FUNCtion:ARBitrary GPETE'); % set current arb waveform to defined arb testrise
+% fprintf(WG_obj,command); % set current arb waveform to defined arb testrise
+% command = ['MMEM:STOR:DATA1 "INT:\' name '.arb"'];
+% %fprintf(fgen,'MMEM:STOR:DATA1 "INT:\GPETE.arb"');%store arb in intermal NV memory
+% fprintf(WG_obj,command);
+% %update waitbar
+% waitbar(.9,h,mes);
+% command = ['SOURCE1:FUNCtion:ARB:SRATe ' num2str(sRate)]; %create sample rate command
+% fprintf(WG_obj,command);%set sample rate
+% fprintf(WG_obj,'SOURce1:FUNCtion ARB'); % turn on arb function
+% command = ['SOURCE1:VOLT ' num2str(amp)]; %create amplitude command
+% fprintf(WG_obj,command); %send amplitude command
+% fprintf(WG_obj,'SOURCE1:VOLT:OFFSET 0'); % set offset to 0 V
+% fprintf(WG_obj,'OUTPUT1 ON'); %Enable Output for channel 1
+% fprintf('SENT_TO_WG waveform downloaded to channel 1\n\n') %print waveform has been downloaded
+% 
+% %get rid of message box
+% waitbar(1,h,mes);
+% delete(h);
+% 
+% %Read Error
+% fprintf(WG_obj, 'SYST:ERR?');
+% errorstr = fscanf (WG_obj);
+% 
+% % error checking
+% if strncmp (errorstr, '+0,"No error"',13)
+%    errorcheck = 'Arbitrary waveform generated without any error\n';
+%    fprintf (errorcheck)
+% else
+%    errorcheck = ['Error reported: ', errorstr];
+%    fprintf (errorcheck)
+% end
+% 
+% fclose(WG_obj);
 
-% Find a VISA-USB object.
-% Защита от создания копий одного и того же объекта соединения
-% Если объект уже существует он не записан в переменную obj1, то записываем
-% его туда (04.10.2021, 1:42)
-WG_obj = instrfind('Type', 'visa-usb', 'RsrcName', 'USB0::0x0957::0x2807::MY57401328::0::INSTR', 'Tag', '');
 
-% Create the VISA-USB object if it does not exist
-% otherwise use the object that was found.
-if isempty(WG_obj)
-    WG_obj = visa('KEYSIGHT', 'USB0::0x0957::0x2807::MY57401328::0::INSTR');
-else
-    fclose(WG_obj);
-    WG_obj = WG_obj(1);
-end
-
-name = 'my_waveforms';
-sRate = fs;
-amp = 1;
-
-% Connect to instrument object, obj1.
-% fopen(obj1);
-
-% vAddress = ['USB0::0x0957::0x2807::MY57401329::0::INSTR']; %build visa address string to connect
-% fgen = visa('AGILENT',vAddress); %build IO object
-% obj1.Timeout = 15; %set IO time out
-%calculate output buffer size
-obj1_buffer = length(SENT_TO_WAVEFORM_GENERATOR)*8;
-set (WG_obj,'OutputBufferSize',(obj1_buffer+125));
-
-WG_obj.Timeout = 10;
-
-%open connection to 33500A/B waveform generator
-try
-   fopen(WG_obj);
-catch exception %problem occurred throw error message
-    uiwait(msgbox('Error occurred trying to connect to the 33522, verify correct IP address','Error Message','error'));
-    rethrow(exception);
-end
-
-%Query Idendity string and report
-fprintf (WG_obj, '*IDN?');
-idn = fscanf (WG_obj);
-fprintf (idn)
-fprintf ('\n\n')
-
-%create waitbar for sending waveform to 33500
-mes = ['Connected to ' idn ' sending waveforms.....'];
-h = waitbar(0,mes);
-
-%Reset instrument
-fprintf (WG_obj, '*RST');
-
-%make sure waveform data is in column vector
-if isrow(SENT_TO_WAVEFORM_GENERATOR) == 0
-    SENT_TO_WAVEFORM_GENERATOR = SENT_TO_WAVEFORM_GENERATOR';
-end
-
-%set the waveform data to single precision
-SENT_TO_WAVEFORM_GENERATOR = single(SENT_TO_WAVEFORM_GENERATOR);
-
-ON_OFF_FILTER_CH1 = ['SOURce1:FUNCtion:ARBitrary:FILTer ', 'OFF'];
-fprintf(WG_obj, ON_OFF_FILTER_CH1); % ON OFF filter
-
-%scale data between 1 and -1
-mx = max(abs(SENT_TO_WAVEFORM_GENERATOR));
-SENT_TO_WAVEFORM_GENERATOR = (1*SENT_TO_WAVEFORM_GENERATOR)/mx;
-
-%update waitbar
-waitbar(.1,h,mes);
-
-%send waveform to 33500
-fprintf(WG_obj, 'SOURce1:DATA:VOLatile:CLEar'); %Clear volatile memory
-fprintf(WG_obj, 'FORM:BORD SWAP');  %configure the box to correctly accept the binary arb points
-SENT_TO_WG_Bytes=num2str(length(SENT_TO_WAVEFORM_GENERATOR) * 4); %# of bytes
-header= ['SOURce1:DATA:ARBitrary ' name ', #' num2str(length(SENT_TO_WG_Bytes)) SENT_TO_WG_Bytes]; %create header
-binblockBytes = typecast(SENT_TO_WAVEFORM_GENERATOR, 'uint8');  %convert datapoints to binary before sending
-fwrite(WG_obj, [header binblockBytes], 'uint8'); %combine header and datapoints then send to instrument
-fprintf(WG_obj, '*WAI');   %Make sure no other commands are exectued until arb is done downloadin
-%update waitbar
-waitbar(.8,h,mes);
-%Set desired configuration for channel 1
-command = ['SOURce1:FUNCtion:ARBitrary ' name];
-%fprintf(fgen,'SOURce1:FUNCtion:ARBitrary GPETE'); % set current arb waveform to defined arb testrise
-fprintf(WG_obj,command); % set current arb waveform to defined arb testrise
-command = ['MMEM:STOR:DATA1 "INT:\' name '.arb"'];
-%fprintf(fgen,'MMEM:STOR:DATA1 "INT:\GPETE.arb"');%store arb in intermal NV memory
-fprintf(WG_obj,command);
-%update waitbar
-waitbar(.9,h,mes);
-command = ['SOURCE1:FUNCtion:ARB:SRATe ' num2str(sRate)]; %create sample rate command
-fprintf(WG_obj,command);%set sample rate
-fprintf(WG_obj,'SOURce1:FUNCtion ARB'); % turn on arb function
-command = ['SOURCE1:VOLT ' num2str(amp)]; %create amplitude command
-fprintf(WG_obj,command); %send amplitude command
-fprintf(WG_obj,'SOURCE1:VOLT:OFFSET 0'); % set offset to 0 V
-fprintf(WG_obj,'OUTPUT1 ON'); %Enable Output for channel 1
-fprintf('SENT_TO_WG waveform downloaded to channel 1\n\n') %print waveform has been downloaded
-
-%get rid of message box
-waitbar(1,h,mes);
-delete(h);
-
-%Read Error
-fprintf(WG_obj, 'SYST:ERR?');
-errorstr = fscanf (WG_obj);
-
-% error checking
-if strncmp (errorstr, '+0,"No error"',13)
-   errorcheck = 'Arbitrary waveform generated without any error\n';
-   fprintf (errorcheck)
-else
-   errorcheck = ['Error reported: ', errorstr];
-   fprintf (errorcheck)
-end
-
-fclose(WG_obj);
-
-%% Подключение к Осциллографу и получение данных от него
+%% РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє РћСЃС†РёР»Р»РѕРіСЂР°С„Сѓ Рё РїРѕР»СѓС‡РµРЅРёРµ РґР°РЅРЅС‹С… РѕС‚ РЅРµРіРѕ
 
 close all;
 clc;
-t = menu('Цена деления времени развертки (мкс)', '20', '50', '100', '200', '500', '1ms', '2ms', '5ms');
+t = menu('Р¦РµРЅР° РґРµР»РµРЅРёСЏ РІСЂРµРјРµРЅРё СЂР°Р·РІРµСЂС‚РєРё (РјРєСЃ)', '20', '50', '100');
 
 
 OSCI_Obj = instrfind('Type', 'visa-usb', 'RsrcName', 'USB0::0x2A8D::0x1797::CN58056332::0::INSTR', 'Tag', '');
@@ -247,7 +248,7 @@ fopen(OSCI_Obj);
 
 % Reset the instrument and autoscale and stop
 % fprintf(visaObj,'*RST; :AUTOSCALE'); 
- fprintf(OSCI_Obj,':STOP');
+fprintf(OSCI_Obj,':STOP');
 % Specify data from Channel 1
 fprintf(OSCI_Obj,':WAVEFORM:SOURCE CHAN1'); 
 % Set timebase to main
@@ -299,10 +300,10 @@ end
 
 RECIEVED_FROM_OSCI = waveform.RawData;
 
-%% Обработка полученных данных с осциллографа
+%% РћР±СЂР°Р±РѕС‚РєР° РїРѕР»СѓС‡РµРЅРЅС‹С… РґР°РЅРЅС‹С… СЃ РѕСЃС†РёР»Р»РѕРіСЂР°С„Р°
 
 
-% График и спектр полученного с осциллографа массива
+% Р“СЂР°С„РёРє Рё СЃРїРµРєС‚СЂ РїРѕР»СѓС‡РµРЅРЅРѕРіРѕ СЃ РѕСЃС†РёР»Р»РѕРіСЂР°С„Р° РјР°СЃСЃРёРІР°
 
 % RECIEVED_FROM_OSCI_FFT = fft(RECIEVED_FROM_OSCI);
 % figure;
@@ -317,42 +318,42 @@ RECIEVED_FROM_OSCI = waveform.RawData;
 
 
 
-switch t
+switch t   % t = menu('Р¦РµРЅР° РґРµР»РµРЅРёСЏ РІСЂРµРјРµРЅРё СЂР°Р·РІРµСЂС‚РєРё (РјРєСЃ)', '20', '50', '100');
     case 1
-        deci_factor_for_received_data = 5;
-        deci_factor_for_sent_data = 1;
-    case 2
-        deci_factor_for_received_data = 2;
-        deci_factor_for_sent_data = 1;
-    case 3
-        deci_factor_for_received_data = 1;
-        deci_factor_for_sent_data = 1;
-    case 4
-        deci_factor_for_received_data = 1;
-        deci_factor_for_sent_data = 2;
-    case 5
-        deci_factor_for_received_data = 1;
+%          deci_factor_for_received_data = 5;
         deci_factor_for_sent_data = 5;
-    case 6
-        deci_factor_for_received_data = 1;
-        deci_factor_for_sent_data = 10;
-    case 7
-        deci_factor_for_received_data = 1;
-        deci_factor_for_sent_data = 20;
-    case 8
-        deci_factor_for_received_data = 1;
-        deci_factor_for_sent_data = 50;
-    otherwise
-        % Если ни один из вариантов не был выбран (т.е. нажали крестик), то
-        % прекратить дальнейшее выполнение программы
+    case 2
+%         deci_factor_for_received_data = 2;
+        deci_factor_for_sent_data = 2;
+    case 3
+%         deci_factor_for_received_data = 1;
+        deci_factor_for_sent_data = 1;
+%     case 4
+%         deci_factor_for_received_data = 1;
+%         deci_factor_for_sent_data = 2;
+%     case 5
+%         deci_factor_for_received_data = 1;
+%         deci_factor_for_sent_data = 5;
+%     case 6
+%         deci_factor_for_received_data = 1;
+%         deci_factor_for_sent_data = 10;
+%     case 7
+%         deci_factor_for_received_data = 1;
+%         deci_factor_for_sent_data = 20;
+%     case 8
+%         deci_factor_for_received_data = 1;
+%         deci_factor_for_sent_data = 50;
+%     otherwise
+        % Р•СЃР»Рё РЅРё РѕРґРёРЅ РёР· РІР°СЂРёР°РЅС‚РѕРІ РЅРµ Р±С‹Р» РІС‹Р±СЂР°РЅ (С‚.Рµ. РЅР°Р¶Р°Р»Рё РєСЂРµСЃС‚РёРє), С‚Рѕ
+        % РїСЂРµРєСЂР°С‚РёС‚СЊ РґР°Р»СЊРЅРµР№С€РµРµ РІС‹РїРѕР»РЅРµРЅРёРµ РїСЂРѕРіСЂР°РјРјС‹
 end
 
 
 
-decimated_RECIEVED_FROM_OSCI = RECIEVED_FROM_OSCI(deci_factor_for_received_data:deci_factor_for_received_data:end);
-decimated_RECIEVED_FROM_OSCI = decimated_RECIEVED_FROM_OSCI/max(abs(decimated_RECIEVED_FROM_OSCI))*2-1;
+% decimated_RECIEVED_FROM_OSCI = RECIEVED_FROM_OSCI(deci_factor_for_received_data:deci_factor_for_received_data:end);
+% decimated_RECIEVED_FROM_OSCI = decimated_RECIEVED_FROM_OSCI/max(abs(decimated_RECIEVED_FROM_OSCI))*2-1;
 
-% Интерполяция полученного (???)
+% РРЅС‚РµСЂРїРѕР»СЏС†РёСЏ РїРѕР»СѓС‡РµРЅРЅРѕРіРѕ (???)
 % RECIEVED_FROM_OSCI = RECIEVED_FROM_OSCI(1:10000);
 % local_L = 5;
 % 
@@ -387,23 +388,44 @@ decimated_RECIEVED_FROM_OSCI = decimated_RECIEVED_FROM_OSCI/max(abs(decimated_RE
 % title('decimated RECIEVED FROM OSCI FFT');
 % grid on;
 
-% Нахождение корреляции
-SENT_TO_WAVEFORM_GENERATOR_DECIMED = SENT_TO_WAVEFORM_GENERATOR(deci_factor_for_sent_data:deci_factor_for_sent_data:end);
+% РќР°С…РѕР¶РґРµРЅРёРµ РєРѕСЂСЂРµР»СЏС†РёРё
 
-[c, lags] = xcorr(decimated_RECIEVED_FROM_OSCI, SENT_TO_WAVEFORM_GENERATOR_DECIMED);
+% РРЅС‚РµСЂРїРѕР»СЏС†РёСЏ РѕС‚РїСЂР°РІР»РµРЅРЅРѕРіРѕ СЃРёРіРЅР°Р»Р°, С‡С‚РѕР±С‹ РѕРЅ РїРѕРґС…РѕРґРёР» РїРѕ СЂР°Р·РјРµСЂСѓ СЃ РїСЂРёРЅСЏС‚С‹Рј
+q = 1; p = 1;
+for i=1:length(MOD_DATA_Interp)
+    MOD_DATA_Interp_2(q:p*deci_factor_for_sent_data)=MOD_DATA_Interp(i);
+    q = p*deci_factor_for_sent_data + 1;
+    p = p + 1;
+end
 
-rt= xcorr(decimated_RECIEVED_FROM_OSCI, SENT_TO_WAVEFORM_GENERATOR_DECIMED);
-figure;
-plot(abs(rt));
+% Р—Р°РґР°РЅРёРµ РІСЂРµРјРµРЅРЅРѕРіРѕ РґРёР°РїР°Р·РѕРЅР°
+t_2 = (0: length(MOD_DATA_Interp_2) - 1)/fs;
+% Р“РµРЅРµСЂР°С†РёСЏ РЅРµСЃСѓС‰РµРіРѕ РЅР°СЂРјРѕРЅРёС‡РµСЃРєРѕРіРѕ СЃРёРіРЅР°Р»Р° СЃ С‡Р°СЃС‚РѕС‚РѕР№ fc (carrying)
+car_sig_2 = sin(2*pi*fc*t_2);
 
-[~, O] = max(abs(rt));
-t_lag2 = lags(O);
+% РџРµСЂРµРЅРѕСЃ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё MOD_DATA_interp_2 РЅР° РЅРµСЃСѓС‰СѓСЋ С‡Р°СЃС‚РѕС‚Сѓ РїСѓС‚РµРј РїРµСЂРµРјРЅРѕР¶РµРЅРёСЏ РЅР° РіР°СЂРјРѕРЅРёС‡РµСЃРєРёР№ СЃРёРіРЅР°Р»
+for i = 1:length(MOD_DATA_Interp_2)
+    mod_carry_2(i) = MOD_DATA_Interp_2(i)*car_sig_2(i);
+end
+
+% РќРѕСЂРјРёСЂРѕРІРєР° RECIEVED_FROM_OSCI
+RECIEVED_FROM_OSCI = RECIEVED_FROM_OSCI / max(RECIEVED_FROM_OSCI);
+
+% РќР°С…РѕР¶РґРµРЅРёРµ РєРѕСЂСЂРµР»СЏС†РёРё
+[c, lag] = xcorr(mod_carry_2, RECIEVED_FROM_OSCI);
+% rt= xcorr(mod_carry_2, RECIEVED_FROM_OSCI);
+% 
+% figure;
+% plot(abs(rt));
+
+% [~, O] = max(abs(rt));
+% t_lag2 = lags(O);
 
 
-% Нормализация
+% РќРѕСЂРјР°Р»РёР·Р°С†РёСЏ РіСЂР°С„РёРєР° РєРѕСЂСЂРµР»СЏС†РёРё
 c = c/max(c);
 [~, I] = max(c);
-t_lag = lags(I);
+t_lag = lag(I);
 
 figure;
 subplot(2, 1, 1);
@@ -411,16 +433,20 @@ plot(c);
 title('CORRELATION C');
 grid on;
 subplot(2, 1, 2);
-plot(lags);
-title('CORRELATION lags');
+plot(lag);
+title('CORRELATION lag');
 grid on;
 % 
 figure;
-plot(lags, abs(c));
-title('CORRELATION');
+plot(lag, abs(c));
+title('abs(c) VS lag graph');
 grid on;
 
-data_piece = decimated_RECIEVED_FROM_OSCI(abs(t_lag2):abs(t_lag2) + length(SENT_TO_WAVEFORM_GENERATOR_DECIMED)-1);
+if abs(t_lag) + length(mod_carry_2) > 50000
+    data_piece = RECIEVED_FROM_OSCI(abs(t_lag) - length(mod_carry_2):abs(t_lag)-1);
+else
+    data_piece = RECIEVED_FROM_OSCI(abs(t_lag):abs(t_lag) + length(mod_carry_2)-1);
+end
 
 % figure;
 % subplot(2, 1, 1);
@@ -432,33 +458,29 @@ data_piece = decimated_RECIEVED_FROM_OSCI(abs(t_lag2):abs(t_lag2) + length(SENT_
 % title('DATA PIECE');
 % grid on;
 
-% Блок повторной интерполяции
+% Р‘Р»РѕРє РїРѕРІС‚РѕСЂРЅРѕР№ РёРЅС‚РµСЂРїРѕР»СЏС†РёРё
 
 % L2 = deci_factor_for_sent_data; 
 
-% Хотел поставить условие if deci_factor_for_sent_data > 1, чтобы не
-% прогонять через цикл массивы, где deci_factor_for_sent_data = 1, но в
-% таком случае переменная data_piece_Interp для таких массивов вообще не образуется
-% Можно просто сделать data_piece_Interp = data_piece;
+% РҐРѕС‚РµР» РїРѕСЃС‚Р°РІРёС‚СЊ СѓСЃР»РѕРІРёРµ if deci_factor_for_sent_data > 1, С‡С‚РѕР±С‹ РЅРµ
+% РїСЂРѕРіРѕРЅСЏС‚СЊ С‡РµСЂРµР· С†РёРєР» РјР°СЃСЃРёРІС‹, РіРґРµ deci_factor_for_sent_data = 1, РЅРѕ РІ
+% С‚Р°РєРѕРј СЃР»СѓС‡Р°Рµ РїРµСЂРµРјРµРЅРЅР°СЏ data_piece_Interp РґР»СЏ С‚Р°РєРёС… РјР°СЃСЃРёРІРѕРІ РІРѕРѕР±С‰Рµ РЅРµ РѕР±СЂР°Р·СѓРµС‚СЃСЏ
+% РњРѕР¶РЅРѕ РїСЂРѕСЃС‚Рѕ СЃРґРµР»Р°С‚СЊ data_piece_Interp = data_piece;
 
-q = 1; p = 1;
-for i=1:length(data_piece)
-    data_piece_Interp(q:p*deci_factor_for_sent_data)=data_piece(i);
-    q = p*deci_factor_for_sent_data + 1;
-    p = p + 1;
-end
 
-% Перенос на нулевую частоту
+% Р”РµС†РёРјРёСЂСѓСЋ РІС‹СЂРµР·Р°РЅРЅС‹Р№ РєСѓСЃРѕРє С‡С‚РѕР±С‹ РїСЂРёРІРµСЃС‚Рё Рє СЂР°Р·РјРµСЂСѓ car_sig
+data_piece_decimed = data_piece(deci_factor_for_sent_data:deci_factor_for_sent_data:end);
 
-for i = 1:length(data_piece_Interp)
-  REVIVE(i) = data_piece_Interp(i)*car_sig(i);  % Пролема кроется здесь. На несущую я садил посылку длиной 5000 с интерполяцией L = 50,
-  % а снимаю децимированную посылку длиной 2500 с интерполяцией L = 25; Поэтому перед этим
-  % блоком нужно снова интерполировать data_piece с коэффициентом L2 = 2
+% РџРµСЂРµРЅРѕСЃ РЅР° РЅСѓР»РµРІСѓСЋ С‡Р°СЃС‚РѕС‚Сѓ
+for i = 1:length(data_piece_decimed)
+  REVIVE(i) = data_piece_decimed(i)*car_sig(i);  % РџСЂРѕР»РµРјР° РєСЂРѕРµС‚СЃСЏ Р·РґРµСЃСЊ. РќР° РЅРµСЃСѓС‰СѓСЋ СЏ СЃР°РґРёР» РїРѕСЃС‹Р»РєСѓ РґР»РёРЅРѕР№ 5000 СЃ РёРЅС‚РµСЂРїРѕР»СЏС†РёРµР№ L = 50,
+  % Р° СЃРЅРёРјР°СЋ РґРµС†РёРјРёСЂРѕРІР°РЅРЅСѓСЋ РїРѕСЃС‹Р»РєСѓ РґР»РёРЅРѕР№ 2500 СЃ РёРЅС‚РµСЂРїРѕР»СЏС†РёРµР№ L = 25; РџРѕСЌС‚РѕРјСѓ РїРµСЂРµРґ СЌС‚РёРј
+  % Р±Р»РѕРєРѕРј РЅСѓР¶РЅРѕ СЃРЅРѕРІР° РёРЅС‚РµСЂРїРѕР»РёСЂРѕРІР°С‚СЊ data_piece СЃ РєРѕСЌС„С„РёС†РёРµРЅС‚РѕРј L2 = 2
 end
 
 
 
-% График перенесенного на 0 частоту принятого сигнала и его спектр
+% Р“СЂР°С„РёРє РїРµСЂРµРЅРµСЃРµРЅРЅРѕРіРѕ РЅР° 0 С‡Р°СЃС‚РѕС‚Сѓ РїСЂРёРЅСЏС‚РѕРіРѕ СЃРёРіРЅР°Р»Р° Рё РµРіРѕ СЃРїРµРєС‚СЂ
 % REVIVE_FFT = fft(REVIVE);
 
 % figure;
@@ -471,7 +493,7 @@ end
 % title('RREVIVE FFT');
 % grid on;
 
-% Фильтрация на нулевой частоте путём интегрирования
+% Р¤РёР»СЊС‚СЂР°С†РёСЏ РЅР° РЅСѓР»РµРІРѕР№ С‡Р°СЃС‚РѕС‚Рµ РїСѓС‚С‘Рј РёРЅС‚РµРіСЂРёСЂРѕРІР°РЅРёСЏ
 
 for i = 1:length(REVIVE)/L
   a(i) = sum(REVIVE(i*L - L+1:i*L))/(L/2); 
@@ -481,7 +503,7 @@ end
 
 
 
-% График отфильтрованного сигнала 
+% Р“СЂР°С„РёРє РѕС‚С„РёР»СЊС‚СЂРѕРІР°РЅРЅРѕРіРѕ СЃРёРіРЅР°Р»Р° 
 % y_FFT = fft(y);
 
 % figure;
@@ -494,7 +516,7 @@ end
 % title('y FFT');
 % grid on;
 
-% Децимация и демодуляция
+% Р”РµС†РёРјР°С†РёСЏ Рё РґРµРјРѕРґСѓР»СЏС†РёСЏ
 
 decim = y(L:L:end);
 
@@ -510,7 +532,7 @@ decim = y(L:L:end);
 % title('decim FFT');
 % grid on;
 
-% Преобразуем децимированный сигнал в битовый поток
+% РџСЂРµРѕР±СЂР°Р·СѓРµРј РґРµС†РёРјРёСЂРѕРІР°РЅРЅС‹Р№ СЃРёРіРЅР°Р» РІ Р±РёС‚РѕРІС‹Р№ РїРѕС‚РѕРє
 
 for i = 1:length(decim)
     if decim(i) < 0
@@ -523,7 +545,7 @@ end
 % figure(8)
 % plot(decim);
 % grid on
-% title('График принятого децимированного');
+% title('Р“СЂР°С„РёРє РїСЂРёРЅСЏС‚РѕРіРѕ РґРµС†РёРјРёСЂРѕРІР°РЅРЅРѕРіРѕ');
 
 
 % figure
@@ -531,7 +553,7 @@ end
 % grid on;
 % title('demod');
 % 
-% figure(111);
+% figure(111);`
 % subplot(2, 1, 1);
 % plot(RECIEVED_FROM_OSCI);
 % title('RECIEVED FROM OSCI');
@@ -547,3 +569,8 @@ scatterplot(decim);
 err = biterr(DATA, demod);
 
 [number, ratio] = biterr(DATA, demod);
+
+msg1 = msgbox(['РљРѕР»РёС‡РµСЃС‚РІРѕ РѕС€РёР±РѕРє = ' num2str(number) ', Error ratio = ' num2str(ratio)]);
+
+%% RMS calculating
+
